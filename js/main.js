@@ -3,7 +3,8 @@
   'use strict';
 
   var registry = window.ArcadeGames || {};
-  var ORDER = ['snake', 'g2048', 'breakout', 'flappy', 'minesweeper', 'memory'];
+  var ORDER = ['snake', 'g2048', 'breakout', 'flappy', 'minesweeper', 'memory',
+               'subway', 'rooftop', 'cookie', 'ctr', 'escape'];
   var CATS = { arcade: 'Arcade', puzzle: 'Puzzle', classics: 'Classics' };
 
   var grid = document.getElementById('game-grid');
