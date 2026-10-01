@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+          <base href="https://cdn.jsdelivr.net/gh/NovaAppsInc/fracital-proxy@808c643ed7924cfb696a68ccdd9d2b97c12a4bee/g/rooftop-snipers/">
+          <script>
+            const __originalURL = window.URL;
+            window.URL = function(url, base) {
+              if (base && (base === 'about:srcdoc' || base.includes('about:srcdoc') || base.startsWith('blob:'))) {
+                base = document.baseURI;
+              }
+              try { return new __originalURL(url, base); } catch (e) {
+                if (base) return new __originalURL(url, document.baseURI);
+                throw e;
+              }
+            };
+            window.URL.createObjectURL = __originalURL.createObjectURL;
+            window.URL.revokeObjectURL = __originalURL.revokeObjectURL;
+          </script>
+          <meta charset="utf-8">
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+          <title>Rooftop Snipers 2</title>
+          <meta name="robots" content="noindex,nofollow" />
+          <script>
+            window.config = {
+              loader: 'unity',
+              debug: false,
+              maxRatio: 16 / 9,
+              minRatio: 9 / 16,
+              title: 'Rooftop Snipers 2',
+              thumbnail: '895b299e7e49558ca383b23648314860.png',
+              numScreenshots: 8,
+              unityVersion: '2019.1.5f1',
+              unityWebglBuildUrl: 'Build/RooftopSnipers2.json',
+              fileSize: 27,
+              cachedDecompressedFileSizes: {
+                'RooftopSnipers2.data.unityweb': 9563147,
+                'RooftopSnipers2.wasm.code.unityweb': 17055668,
+                'RooftopSnipers2.wasm.framework.unityweb': 475014,
+              },
+            };
+          </script>
+          <style>body { margin: 0; overflow: hidden; background: #000; }</style>
+</head>
+<body>
+          <script src="sdkv3/master-loader.js"></script>
+</body>
+</html>

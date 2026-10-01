@@ -4,7 +4,9 @@
 
   var registry = window.ArcadeGames || {};
   var ORDER = ['snake', 'g2048', 'breakout', 'flappy', 'minesweeper', 'memory',
-               'subway', 'rooftop', 'cookie', 'ctr', 'escape'];
+               'subway', 'rooftop', 'cookie', 'ctr', 'escape',
+               'ragdoll-archers', 'gorilla-tag', 'getaway-shootout', 'run3',
+               'retro-bowl', 'ragdoll-drop', 'sandbox-city', 'rooftop-snipers-2'];
   var CATS = { arcade: 'Arcade', puzzle: 'Puzzle', classics: 'Classics' };
 
   var grid = document.getElementById('game-grid');

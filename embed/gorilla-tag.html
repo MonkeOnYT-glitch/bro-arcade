@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en-us">
+          <head>
+            <meta charset="utf-8">
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <title>Unity WebGL Player | gorilla tag web</title>
+            <base href="https://cdn.jsdelivr.net/gh/web-ports/gorilla-tag@latest/">
+            <script>
+              const __originalURL = window.URL;
+              window.URL = function(url, base) {
+                if (base && (base === 'about:srcdoc' || base.includes('about:srcdoc') || base.startsWith('blob:'))) {
+                  base = document.baseURI;
+                }
+                try { return new __originalURL(url, base); } catch (e) {
+                  if (base) return new __originalURL(url, document.baseURI);
+                  throw e;
+                }
+              };
+              window.URL.createObjectURL = __originalURL.createObjectURL;
+              window.URL.revokeObjectURL = __originalURL.revokeObjectURL;
+            </script>
+            <style>
+                html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #231F20; }
+                #unity-container { width: 100%; height: 100%; position: fixed; top: 0; left: 0; }
+            </style>
+          </head>
+          <body>
+            <div id="loading-text" style="color: white; font-size: 48px; font-family: cursive; text-align: center; margin-top: 20px;"> LOADING... </div>
+            <div id="unity-container" class="unity-desktop" hidden>
+              <canvas id="unity-canvas" style="width:100%; height:100%;" tabindex="-1"></canvas>
+              <div id="unity-loading-bar">
+                <div id="unity-progress-bar-empty">
+                  <div id="unity-progress-bar-full"></div>
+                </div>
+              </div>
+            </div>
+            <script>
+                const baseUrl = "https://cdn.jsdelivr.net/gh/web-ports/gorilla-tag@latest/";
+                var loadingText = document.querySelector("#loading-text");
+                let totalBytes = 0;
+                let loadedBytes = 0;
+
+                async function fetchWithProgress(url) {
+                    const response = await fetch(url);
+                    const reader = response.body.getReader();
+                    let chunks = [];
+                    let received = 0;
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        received += value.length;
+                        loadedBytes += value.length;
+                        chunks.push(value);
+                        let mbDone = (loadedBytes / (1024 * 1024)).toFixed(2);
+                        let mbTotal = '150.89';
+                        loadingText.textContent = `LOADING... ${mbDone} MB / ${mbTotal} MB`;
+                    }
+                    let fullBuffer = new Uint8Array(received);
+                    let offset = 0;
+                    for (let chunk of chunks) {
+                        fullBuffer.set(chunk, offset);
+                        offset += chunk.length;
+                    }
+                    return fullBuffer.buffer;
+                }
+
+                async function mergeFiles(fileParts, cacheKey) {
+                    const buffers = await Promise.all(fileParts.map(part => fetchWithProgress(part)));
+                    const mergedBlob = new Blob(buffers);
+                    return URL.createObjectURL(mergedBlob);
+                }
+
+                function getParts(file, start, end) {
+                    let parts = [];
+                    for (let i = start; i <= end; i++) {
+                        parts.push(baseUrl + file + ".part" + i);
+                    }
+                    return parts;
+                }
+
+                (async () => {
+                    const [dataUrl] = await Promise.all([
+                        mergeFiles(getParts("Build/gtagwebR2.data.unityweb", 1, 8), "gtagwebR2.data.unityweb"),
+                    ]);
+                    var buildUrl = baseUrl + "Build";
+                    var loaderUrl = buildUrl + "/gtagwebR2.loader.js";
+                    var config = {
+                        dataUrl: dataUrl,
+                        frameworkUrl: buildUrl + "/gtagwebR2.framework.js.unityweb",
+                        codeUrl: buildUrl + "/gtagwebR2.wasm.unityweb",
+                        streamingAssetsUrl: baseUrl + "StreamingAssets",
+                        companyName: "boolonx",
+                        productName: "gorilla tag web",
+                        productVersion: "1.0",
+                    };
+
+                    var container = document.querySelector("#unity-container");
+                    container.hidden = false;
+                    var canvas = document.querySelector("#unity-canvas");
+                    var loadingBar = document.querySelector("#unity-loading-bar");
+                    var progressBarFull = document.querySelector("#unity-progress-bar-full");
+
+                    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                        container.className = "unity-mobile";
+                        config.devicePixelRatio = 1;
+                    } else {
+                        function resizeCanvas() {
+                            canvas.width = window.innerWidth;
+                            canvas.height = window.innerHeight;
+                            canvas.style.width = window.innerWidth + "px";
+                            canvas.style.height = window.innerHeight + "px";
+                        }
+                        resizeCanvas();
+                        window.addEventListener('resize', resizeCanvas);
+                    }
+
+                    loadingBar.style.display = "block";
+                    var script = document.createElement("script");
+                    script.src = loaderUrl;
+                    script.onload = () => {
+                        createUnityInstance(canvas, config, (progress) => {
+                            if (progressBarFull) progressBarFull.style.width = 100 * progress + "%";
+                        }).then((unityInstance) => {
+                            loadingText.remove();
+                            loadingBar.style.display = "none";
+                            canvas.style.display = "block";
+                        }).catch(async (message) => {
+                            console.error(message);
+                        });
+                    };
+                    document.body.appendChild(script);
+                })();
+            </script>
+          </body>
+</html>

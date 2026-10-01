@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bro Arcade — Free Games, No Downloads</title>
-<meta name="description" content="Bro Arcade: a free collection of classic and puzzle games you can play right in your browser. No downloads, no sign-up.">
+<meta name="description" content="Bro Arcade: 19 free browser games, a Monke AI chatbot, tab Cloak disguise, proxy browser, and live lobby chat. No downloads, no sign-up.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0a0f'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23ff6b9d' font-family='Arial Black'%3EB%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,18 +15,21 @@
 <canvas id="stars" aria-hidden="true"></canvas>
 
 <header class="nav">
-  <a class="logo" href="#top">BRO<span>ARCADE</span></a>
-  <nav>
-    <a href="#games">Games</a>
-    <a href="#more">More games</a>
+  <a class="logo" href="#top" id="logo-home">BRO<span>ARCADE</span></a>
+  <nav id="main-nav">
+    <button class="tab-btn active" data-tab="games">&#127918; Games</button>
+    <button class="tab-btn" data-tab="ai">&#129302; Monke AI</button>
+    <button class="tab-btn" data-tab="cloak">&#128373; Cloak</button>
+    <button class="tab-btn" data-tab="proxy">&#127760; Proxy</button>
   </nav>
 </header>
 
 <main id="top">
+  <div id="view-games">
   <section class="hero">
     <div class="hero-badge">100% free &middot; no downloads &middot; no sign-up</div>
     <h1>Pick a game.<br><span class="grad">Start playing.</span></h1>
-    <p class="hero-sub">Eleven games — six hand-built classics plus five embedded favorites — running right in your browser. Your high scores are saved on this device.</p>
+    <p class="hero-sub">Nineteen games — six hand-built classics plus thirteen embedded favorites — running right in your browser. Your high scores are saved on this device.</p>
     <div class="hero-tools">
       <div class="search">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -66,10 +69,107 @@
       </a>
     </div>
   </section>
+  </div><!-- /view-games -->
+
+  <section id="view-ai" class="tool-section" hidden>
+    <div class="tool-head">
+      <h2>&#129302; Monke AI</h2>
+      <p class="tool-sub">Chat with Monke, powered by Gemini. <span id="ai-limit-note"></span></p>
+    </div>
+    <div class="ai-panel">
+      <div class="ai-log" id="ai-chat-log" aria-live="polite"></div>
+      <div class="ai-personas" id="ai-personas">
+        <button class="persona-btn active" data-persona="monke" onclick="window.setPersona('monke')">&#128018; Monke</button>
+        <button class="persona-btn" data-persona="friend" onclick="window.setPersona('friend')">Friend</button>
+        <button class="persona-btn" data-persona="math" onclick="window.setPersona('math')">Math</button>
+        <button class="persona-btn" data-persona="smart" onclick="window.setPersona('smart')">Smart</button>
+        <button class="persona-btn" data-persona="essays" onclick="window.setPersona('essays')">Essays</button>
+        <button class="ai-clear" onclick="window.clearAIChat()">Clear</button>
+      </div>
+      <div id="ai-img-preview-container" class="ai-img-preview" hidden>
+        <img id="ai-img-preview" src="" alt="Attachment preview">
+        <button class="ai-img-x" onclick="window.clearAIImage()" aria-label="Remove image">&times;</button>
+      </div>
+      <div class="ai-inputrow">
+        <input type="file" id="ai-file-upload" accept="image/*" hidden>
+        <button class="icon-btn ai-tool" onclick="document.getElementById('ai-file-upload').click()" aria-label="Attach image">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+        </button>
+        <button class="icon-btn ai-tool" onclick="window.startAIDictation()" aria-label="Voice input">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+        </button>
+        <div class="ai-inputwrap">
+          <input id="ai-input" type="text" maxlength="2000" placeholder="Ask Monke anything…" autocomplete="off" oninput="window.updateCharCount()">
+          <span id="ai-char-count"></span>
+        </div>
+        <button class="btn primary" id="ai-send-btn" onclick="window.sendToAI()">Send</button>
+      </div>
+      <p class="ai-hint" id="ai-hint"></p>
+    </div>
+  </section>
+
+  <section id="view-cloak" class="tool-section" hidden>
+    <div class="tool-head">
+      <h2>&#128373; Cloak</h2>
+      <p class="tool-sub">Disguise this tab as something boring. Includes a fully fake Google search — no real queries ever leave your browser.</p>
+    </div>
+    <div class="cloak-panel">
+      <div class="cloak-modes">
+        <span class="cloak-label">Tab disguise:</span>
+        <button class="cloak-mode-btn active" data-mode="none" onclick="window.setCloakMode('none')">Off</button>
+        <button class="cloak-mode-btn" data-mode="google" onclick="window.setCloakMode('google')">Google</button>
+        <button class="cloak-mode-btn" data-mode="drive" onclick="window.setCloakMode('drive')">Drive</button>
+        <button class="cloak-mode-btn" data-mode="gmail" onclick="window.setCloakMode('gmail')">Gmail</button>
+        <button class="cloak-mode-btn" data-mode="clever" onclick="window.setCloakMode('clever')">Clever</button>
+        <button class="cloak-exit" onclick="window.exitCloak()">Exit cloak</button>
+      </div>
+      <div id="cloak-google-wrap">
+        <div id="cloak-google-home" class="cloak-ghome">
+          <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png" alt="Google" class="cloak-glogo">
+          <input id="cloak-home-input" class="cloak-ginput" placeholder="Search Google or type a URL" autocomplete="off">
+          <div class="cloak-gbtns">
+            <button class="cloak-gbtn" onclick="window.sendCloakQuery('cloak-home-input')">Google Search</button>
+            <button class="cloak-gbtn" onclick="window.sendCloakQuery('cloak-home-input')">I&rsquo;m Feeling Lucky</button>
+          </div>
+        </div>
+        <div id="cloak-google-results" class="cloak-gresults" style="display:none">
+          <div class="cloak-gbar">
+            <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png" alt="Google" class="cloak-glogo-sm" onclick="window.cloakBackHome()">
+            <input id="cloak-results-input" class="cloak-ginput sm" autocomplete="off">
+          </div>
+          <div id="cloak-results-list"></div>
+        </div>
+      </div>
+      <div class="panic-panel">
+        <h3>Panic key</h3>
+        <p>Press this key anywhere on the site to instantly bail to a safe page.</p>
+        <div class="panic-row">
+          <label>Key <input id="panic-key-input" maxlength="1" class="panic-key"></label>
+          <label class="panic-url-label">Bail to URL <input id="panic-url-input" class="panic-url" placeholder="https://classroom.google.com/"></label>
+          <button class="btn primary" onclick="window.savePanic()">Save</button>
+        </div>
+      </div>
+    </div>
+    <div class="cloak-toast" id="cloak-toast"></div>
+  </section>
+
+  <section id="view-proxy" class="tool-section" hidden>
+    <div class="tool-head">
+      <h2>&#127760; Proxy</h2>
+      <p class="tool-sub">Load any site in the frame below.</p>
+    </div>
+    <div class="proxy-bar">
+      <input id="proxy-url-input" type="text" value="https://storage.googleapis.com/fernisbest/index.html" placeholder="https://…" autocomplete="off" spellcheck="false">
+      <button class="btn primary" onclick="window.loadProxy()">Go</button>
+    </div>
+    <div class="proxy-frame-wrap">
+      <iframe id="proxy-iframe" src="https://storage.googleapis.com/fernisbest/index.html" allow="fullscreen; microphone; camera" allowfullscreen title="Proxy frame"></iframe>
+    </div>
+  </section>
 </main>
 
 <footer>
-  <p>Six hand-built originals, five embedded favorites, and a live lobby chat. High scores are saved on this device.</p>
+  <p>Six hand-built originals, thirteen embedded favorites, Monke AI, Cloak, Proxy, and a live lobby chat. High scores are saved on this device.</p>
 </footer>
 
 <button class="chat-fab" id="chat-fab" aria-label="Open lobby chat">
@@ -132,6 +232,10 @@
 <script src="js/games/memory.js"></script>
 <script src="js/games/embed.js"></script>
 <script src="js/main.js"></script>
+<script src="js/tabs.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/cloak.js"></script>
+<script src="js/proxy.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
