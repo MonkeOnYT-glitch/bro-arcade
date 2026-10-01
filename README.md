@@ -35,6 +35,7 @@ High scores are saved per game in the browser's `localStorage` (hand-built games
 - **🕵️ Cloak** — disguise the browser tab as Google, Drive, Gmail, or Clever (title + favicon spoofing), a fully fake Google search that never sends real queries, and a configurable panic key that bails to a safe page instantly.
 - **🌐 Proxy** — load any URL in a full-width frame.
 - **💬 Lobby chat** — realtime Firebase chat with anonymous auth.
+- **💭 Comms** — the full Vault Comms system: create/join public servers with text and voice channels, direct messages, friend requests, blocking, image messages, and real WebRTC voice/video calls with Firestore signaling. No login needed — you join as your lobby-chat name via anonymous auth (the vault's password login was deliberately not ported). Shares the same Firebase collections as the vault app, so it's one network.
 
 ## Run it
 
@@ -60,10 +61,12 @@ js/games/minesweeper.js
 js/games/flappy.js
 js/games/memory.js
 js/games/embed.js     embedded titles (iframe loader, see below)
-js/tabs.js            tab navigation (Games / AI / Cloak / Proxy)
+js/tabs.js            tab navigation (Games / AI / Cloak / Proxy / Comms)
 js/ai.js              Monke AI chatbot (Gemini, personas, image, dictation)
 js/cloak.js           tab disguise + fake Google search + panic key
 js/proxy.js           proxy URL loader
+js/comms.js           Vault Comms port (servers, DMs, friends, WebRTC voice/video)
+js/chat.js            lobby chat (Firebase anonymous auth)
 embed/subway.html     }
 embed/rooftop.html    } game loader pages — each pulls its assets
 embed/cookie.html     } from a public CDN mirror at play time

@@ -1,8 +1,8 @@
-/* Tab navigation: Games / Monke AI / Cloak / Proxy views. */
+/* Tab navigation: Games / Monke AI / Cloak / Proxy / Comms views. */
 (function () {
   'use strict';
 
-  var VIEWS = { games: 'view-games', ai: 'view-ai', cloak: 'view-cloak', proxy: 'view-proxy' };
+  var VIEWS = { games: 'view-games', ai: 'view-ai', cloak: 'view-cloak', proxy: 'view-proxy', comms: 'view-comms' };
 
   window.showTab = function (name) {
     if (!VIEWS[name]) return;
