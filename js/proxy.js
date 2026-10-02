@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  var DEFAULT_URL = 'https://storage.googleapis.com/fernisbest/index.html';
+  var DEFAULT_URL = 'https://s3.amazonaws.com/subtobull/index.html';
 
   window.loadProxy = function () {
     var input = document.getElementById('proxy-url-input');
