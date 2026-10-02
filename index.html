@@ -12,6 +12,8 @@
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<div id="custom-cursor" aria-hidden="true"></div>
+<div class="vault-bg" aria-hidden="true"><div class="vault-glow-line"></div></div>
 <canvas id="stars" aria-hidden="true"></canvas>
 
 <header class="nav">
@@ -21,6 +23,7 @@
     <button class="tab-btn" data-tab="ai">&#129302; Monke AI</button>
     <button class="tab-btn" data-tab="cloak">&#128373; Cloak</button>
     <button class="tab-btn" data-tab="proxy">&#127760; Proxy</button>
+    <button class="tab-btn" data-tab="fetcher">&#128229; Fetcher</button>
     <button class="tab-btn" data-tab="comms">&#128172; Comms</button>
   </nav>
 </header>
@@ -121,6 +124,7 @@
         <button class="cloak-mode-btn" data-mode="google" onclick="window.setCloakMode('google')">Google</button>
         <button class="cloak-mode-btn" data-mode="drive" onclick="window.setCloakMode('drive')">Drive</button>
         <button class="cloak-mode-btn" data-mode="gmail" onclick="window.setCloakMode('gmail')">Gmail</button>
+        <button class="cloak-mode-btn" data-mode="classroom" onclick="window.setCloakMode('classroom')">Classroom</button>
         <button class="cloak-mode-btn" data-mode="clever" onclick="window.setCloakMode('clever')">Clever</button>
         <button class="cloak-exit" onclick="window.exitCloak()">Exit cloak</button>
       </div>
@@ -165,6 +169,41 @@
     </div>
     <div class="proxy-frame-wrap">
       <iframe id="proxy-iframe" src="https://storage.googleapis.com/fernisbest/index.html" allow="fullscreen; microphone; camera" allowfullscreen title="Proxy frame"></iframe>
+    </div>
+  </section>
+
+  <section id="view-fetcher" class="tool-section" hidden>
+    <div class="tool-head">
+      <h2>&#128229; Fetcher</h2>
+      <p class="tool-sub">School blocked <span>github.com</span> and <span>jsDelivr</span>? Paste a GitHub link — we pull it through a mirror they didn't block.</p>
+    </div>
+    <div class="proxy-bar">
+      <input id="fetcher-url-input" type="text" placeholder="https://github.com/user/repo/blob/main/index.html" autocomplete="off" spellcheck="false">
+      <button class="btn primary" onclick="window.loadFetcher()">Fetch</button>
+    </div>
+    <div class="fetcher-controls">
+      <div class="seg" id="fetcher-mode-seg">
+        <button type="button" data-mode="direct" class="on">Direct</button>
+        <button type="button" data-mode="inject">Inject</button>
+      </div>
+      <select id="fetcher-mirror-select" aria-label="Mirror">
+        <option value="auto">Mirror: Auto</option>
+        <option value="statically">Statically</option>
+        <option value="githack">Githack</option>
+        <option value="allorigins">AllOrigins</option>
+        <option value="codetabs">CodeTabs</option>
+        <option value="corsproxy">CorsProxy.io</option>
+        <option value="jsdelivr">jsDelivr (home)</option>
+      </select>
+      <button class="btn ghost" onclick="window.fetcherCopyLink()">Copy link</button>
+      <button class="btn ghost" onclick="window.fetcherFullscreen()">Fullscreen</button>
+    </div>
+    <div class="fetcher-status" id="fetcher-status">Paste a GitHub link above — or quick-load a game below, it dodges the blocked CDNs automatically.</div>
+    <div class="fetcher-chips" id="fetcher-chips"></div>
+    <p class="fetcher-dl">On a school Chromebook and can't even download the site itself?
+      <a href="download.html" target="_blank" rel="noopener">Grab the whole arcade as a zip — no GitHub needed &rarr;</a></p>
+    <div class="proxy-frame-wrap" id="fetcher-frame-wrap">
+      <iframe id="fetcher-iframe" allow="fullscreen; autoplay; encrypted-media" allowfullscreen title="Fetcher frame"></iframe>
     </div>
   </section>
 
@@ -297,6 +336,7 @@
       <div class="hud-btns">
         <button class="btn ghost" id="m-pause">Pause</button>
         <button class="btn ghost" id="m-restart">Restart</button>
+        <button class="btn ghost" onclick="window.toggleGameFullscreen()">Fullscreen</button>
       </div>
     </div>
     <div class="stage-wrap">
@@ -529,9 +569,11 @@
 <script src="js/games/embed.js"></script>
 <script src="js/main.js"></script>
 <script src="js/tabs.js"></script>
+<script src="js/cursor.js"></script>
 <script src="js/ai.js"></script>
 <script src="js/cloak.js"></script>
 <script src="js/proxy.js"></script>
+<script src="js/fetcher.js"></script>
 <script src="js/comms.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get Bro Arcade — no GitHub needed</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: #0a0a12; color: #f2f0fa; font-family: 'Segoe UI', system-ui, sans-serif;
+    background-image:
+      linear-gradient(rgba(147,51,234,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(147,51,234,0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    padding: 24px;
+  }
+  .card {
+    width: min(560px, 94vw); background: rgba(20,16,31,0.92);
+    border: 1px solid rgba(192,132,252,0.25); border-radius: 20px;
+    padding: 34px 30px; text-align: center;
+    box-shadow: 0 0 60px rgba(147,51,234,0.18);
+  }
+  h1 { margin: 0 0 6px; font-size: 30px; letter-spacing: 1px;
+    background: linear-gradient(135deg, #ff6b9d, #c084fc, #60a5fa);
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  p { color: #a7a3c2; font-size: 14px; line-height: 1.6; }
+  p b { color: #e8e4f7; }
+  .btn {
+    display: inline-block; margin-top: 14px; padding: 14px 34px; font-size: 16px; font-weight: 800;
+    color: #fff; background: linear-gradient(135deg, #ec4899, #8b5cf6); border: 0; border-radius: 12px;
+    cursor: pointer; box-shadow: 0 4px 20px rgba(236,72,153,0.4);
+  }
+  .btn:disabled { opacity: 0.5; cursor: wait; }
+  .bar { height: 10px; background: rgba(255,255,255,0.08); border-radius: 99px; margin-top: 22px; overflow: hidden; display: none; }
+  .bar > div { height: 100%; width: 0%; background: linear-gradient(90deg, #ec4899, #8b5cf6); border-radius: 99px; transition: width 0.2s; }
+  #status { margin-top: 14px; font-size: 13px; color: #a7a3c2; min-height: 20px; }
+  #status b { color: #e8e4f7; }
+  .files { text-align: left; margin-top: 16px; max-height: 220px; overflow-y: auto; display: none;
+    background: rgba(0,0,0,0.3); border-radius: 10px; padding: 12px 16px; font-size: 13px; }
+  .files a { color: #c084fc; text-decoration: none; display: block; padding: 3px 0; }
+  .tiny { margin-top: 18px; font-size: 12px; opacity: 0.7; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>BRO ARCADE</h1>
+  <p><b>School Chromebook?</b> GitHub is blocked, so this page grabs the whole
+  arcade for you — every game, every file — through CDN mirrors instead.
+  Hit the button, get a <b>zip</b>, unzip it, open <b>index.html</b>. Done.</p>
+  <button class="btn" id="dl">Download bro-arcade.zip</button>
+  <div class="bar" id="bar"><div id="fill"></div></div>
+  <div id="status"></div>
+  <div class="files" id="files"></div>
+  <p class="tiny">No github.com is touched — files come from Statically / Githack mirrors.</p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var REPO = { user: 'MonkeOnYT-glitch', repo: 'bro-arcade', branch: 'main' };
+  var TIMEOUT = 15000;
+
+  var PROXIES = [
+    function (u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
+    function (u) { return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u); },
+    function (u) { return 'https://corsproxy.io/?url=' + encodeURIComponent(u); }
+  ];
+  function mirrorUrls(path) {
+    return [
+      'https://cdn.statically.io/gh/' + REPO.user + '/' + REPO.repo + '/' + REPO.branch + '/' + path,
+      'https://raw.githack.com/' + REPO.user + '/' + REPO.repo + '/' + REPO.branch + '/' + path
+    ];
+  }
+  var JSZIP_URLS = [
+    'https://cdn.statically.io/npm/jszip@3.10.1/dist/jszip.min.js',
+    'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js',
+    'https://unpkg.com/jszip@3.10.1/dist/jszip.min.js'
+  ];
+
+  var statusEl = document.getElementById('status');
+  var fillEl = document.getElementById('fill');
+  var barEl = document.getElementById('bar');
+  function status(html) { statusEl.innerHTML = html; }
+  function progress(done, total) {
+    barEl.style.display = 'block';
+    fillEl.style.width = (total ? (done / total * 100) : 0) + '%';
+  }
+
+  function fetchTimeout(url, ms) {
+    var ctrl = new AbortController();
+    var t = setTimeout(function () { ctrl.abort(); }, ms || TIMEOUT);
+    return fetch(url, { signal: ctrl.signal }).then(
+      function (r) { clearTimeout(t); return r; },
+      function (e) { clearTimeout(t); throw e; });
+  }
+
+  function loadJsZip() {
+    if (window.JSZip) return Promise.resolve();
+    var chain = Promise.resolve();
+    JSZIP_URLS.forEach(function (src) {
+      chain = chain.then(function () {
+        if (window.JSZip) return;
+        return new Promise(function (resolve) {
+          var s = document.createElement('script');
+          s.src = src;
+          s.onload = function () { resolve(); };
+          s.onerror = function () { s.remove(); resolve(); };
+          document.head.appendChild(s);
+          setTimeout(resolve, 12000);
+        });
+      });
+    });
+    return chain.then(function () { return !!window.JSZip; });
+  }
+
+  function getTree() {
+    var api = 'https://api.github.com/repos/' + REPO.user + '/' + REPO.repo +
+      '/git/trees/' + REPO.branch + '?recursive=1';
+    var chain = Promise.resolve(null);
+    PROXIES.forEach(function (wrap) {
+      chain = chain.then(function (found) {
+        if (found) return found;
+        return fetchTimeout(wrap(api)).then(function (r) {
+          if (!r.ok) throw new Error('http ' + r.status);
+          return r.json();
+        }).then(function (j) {
+          var files = (j.tree || []).filter(function (e) { return e.type === 'blob'; });
+          return files.length ? files : null;
+        }).catch(function () { return null; });
+      });
+    });
+    return chain;
+  }
+
+  function fetchFile(path) {
+    var urls = mirrorUrls(path);
+    var chain = Promise.resolve(null);
+    urls.forEach(function (u) {
+      chain = chain.then(function (found) {
+        if (found) return found;
+        return fetchTimeout(u).then(function (r) {
+          if (!r.ok) throw new Error('http ' + r.status);
+          return r.arrayBuffer();
+        }).catch(function () { return null; });
+      });
+    });
+    return chain;
+  }
+
+  function showFileLinks(files) {
+    var box = document.getElementById('files');
+    box.style.display = 'block';
+    box.innerHTML = '';
+    files.forEach(function (f) {
+      var a = document.createElement('a');
+      a.href = mirrorUrls(f.path)[0];
+      a.textContent = '⬇ ' + f.path;
+      a.download = f.path.split('/').pop();
+      box.appendChild(a);
+    });
+    status('Zip library was blocked too — grab the files <b>one by one</b> below. ' +
+      'Keep the folder structure when you save them.');
+  }
+
+  document.getElementById('dl').addEventListener('click', function () {
+    var btn = this;
+    btn.disabled = true;
+    status('Listing files…');
+    progress(0, 1);
+    getTree().then(function (files) {
+      if (!files) {
+        status('Couldn\'t reach the file list from here. Try another network.');
+        btn.disabled = false;
+        return;
+      }
+      status('Found <b>' + files.length + '</b> files. Downloading…');
+      loadJsZip().then(function (hasZip) {
+        if (!hasZip) { showFileLinks(files); btn.disabled = false; return; }
+        var zip = new JSZip();
+        var done = 0, failed = [];
+        var queue = files.slice();
+        function worker() {
+          var f = queue.shift();
+          if (!f) return Promise.resolve();
+          return fetchFile(f.path).then(function (buf) {
+            if (buf) zip.file(f.path, buf);
+            else failed.push(f.path);
+            done++;
+            progress(done, files.length);
+            status('Downloaded <b>' + done + '</b> / ' + files.length + ' files…');
+          }).then(worker);
+        }
+        var workers = [];
+        for (var i = 0; i < 6; i++) workers.push(worker());
+        Promise.all(workers).then(function () {
+          if (failed.length) {
+            status('Skipped <b>' + failed.length + '</b> files (mirror hiccup): ' +
+              failed.slice(0, 5).join(', ') + (failed.length > 5 ? '…' : ''));
+          } else {
+            status('Zipping…');
+          }
+          return zip.generateAsync({ type: 'blob' }, function (meta) {
+            progress(meta.percent, 100);
+            status('Zipping… <b>' + Math.round(meta.percent) + '%</b>');
+          });
+        }).then(function (blob) {
+          var a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'bro-arcade.zip';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+          status('✓ <b>bro-arcade.zip</b> downloaded. Unzip it, open <b>index.html</b>, and you\'re in.');
+          btn.disabled = false;
+        });
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

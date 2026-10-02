@@ -32,8 +32,9 @@ High scores are saved per game in the browser's `localStorage` (hand-built games
 
 - **🎮 Games** — 19 titles: six hand-built originals plus thirteen embedded favorites.
 - **🤖 Monke AI** — Gemini-powered chatbot with five personas (Monke, Friend, Math, Smart, Essays), image upload, voice dictation, a local math fast-path, chat history, and a 30/day per-browser limit. The API key lives client-side (inherent to browser-called AI); it's a free-tier key with no billing attached.
-- **🕵️ Cloak** — disguise the browser tab as Google, Drive, Gmail, or Clever (title + favicon spoofing), a fully fake Google search that never sends real queries, and a configurable panic key that bails to a safe page instantly.
+- **🕵️ Cloak** — disguise the browser tab as Google, Drive, Gmail, Classroom, or Clever (title + favicon spoofing), a fully fake Google search that never sends real queries, and a configurable panic key that bails to a safe page instantly.
 - **🌐 Proxy** — load any URL in a full-width frame.
+- **📥 Fetcher** — paste any GitHub file link (`github.com/user/repo/blob/main/…`, raw links, even bare repo URLs) and it pulls the page through a chain of CDN mirrors (Statically, Githack, AllOrigins, CodeTabs, CorsProxy.io, jsDelivr) so it loads on networks that block `github.com` and `cdn.jsdelivr.net` — like school. Two load modes: **Direct** (mirror URL straight into the frame, relative assets resolve natively) and **Inject** (fetches the HTML, rewrites relative URLs to the winning mirror, injects via `srcdoc` into a sandboxed frame for mirrors that block framing). Mirror can be forced manually or left on Auto. **Quick-load chips** re-point all 13 embedded games at a working mirror automatically, so they play even where jsDelivr is blocked. **download.html** is a standalone single-file page that zips the entire repo through CDN mirrors — for school Chromebooks where github.com itself is blocked.
 - **💬 Lobby chat** — realtime Firebase chat with anonymous auth.
 - **💭 Comms** — the full Vault Comms system: create/join public servers with text and voice channels, direct messages, friend requests, blocking, image messages, and real WebRTC voice/video calls with Firestore signaling. No login needed — you join as your lobby-chat name via anonymous auth (the vault's password login was deliberately not ported). Shares the same Firebase collections as the vault app, so it's one network.
 
@@ -61,10 +62,12 @@ js/games/minesweeper.js
 js/games/flappy.js
 js/games/memory.js
 js/games/embed.js     embedded titles (iframe loader, see below)
-js/tabs.js            tab navigation (Games / AI / Cloak / Proxy / Comms)
+js/tabs.js            tab navigation (Games / AI / Cloak / Proxy / Fetcher / Comms)
 js/ai.js              Monke AI chatbot (Gemini, personas, image, dictation)
 js/cloak.js           tab disguise + fake Google search + panic key
 js/proxy.js           proxy URL loader
+js/fetcher.js         GitHub-link fetcher (multi-mirror chain, direct/inject modes, quick-load chips)
+download.html         standalone page: downloads the whole repo as a zip via CDN mirrors (for blocked networks)
 js/comms.js           Vault Comms port (servers, DMs, friends, WebRTC voice/video)
 js/chat.js            lobby chat (Firebase anonymous auth)
 embed/subway.html     }

@@ -183,6 +183,7 @@
     showReady(id);
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
+    document.body.classList.add('game-open');
   }
 
   function mountController() {
@@ -213,8 +214,20 @@
     if (!silent) {
       modal.hidden = true;
       document.body.style.overflow = '';
+      document.body.classList.remove('game-open');
+      if (document.fullscreenElement) document.exitFullscreen().catch(function () {});
     }
   }
+
+  window.toggleGameFullscreen = function () {
+    var el = document.querySelector('#game-modal .modal');
+    if (!el) return;
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(function () {});
+    } else if (el.requestFullscreen) {
+      el.requestFullscreen().catch(function () {});
+    }
+  };
 
   mOvBtn.addEventListener('click', function () {
     if (!current) return;

@@ -343,6 +343,19 @@ footer {
   to { transform: scale(1) translateY(0); opacity: 1; }
 }
 
+/* game modal in fullscreen: fill the screen, stage takes the space */
+.modal:fullscreen {
+  width: 100vw;
+  max-height: 100vh;
+  height: 100vh;
+  border-radius: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+}
+.modal:fullscreen .stage-wrap { flex: 1; min-height: 0; }
+.modal:fullscreen #m-stage { height: 100%; }
+
 .modal-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .modal-head h3 { font-family: var(--font-display); font-size: 24px; }
 .modal-head p { color: var(--muted); font-size: 14px; margin-top: 4px; }
@@ -979,6 +992,110 @@ footer {
   min-height: 480px;
 }
 .proxy-frame-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+
+/* ── Monke Vault full styling: custom cursor, grid bg, animations ── */
+* { cursor: none !important; }
+
+#custom-cursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #c084fc;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2147483647;
+  box-shadow: 0 0 12px rgba(147, 51, 234, 0.5);
+  transform: translate(-50%, -50%);
+  transition: opacity 0.15s;
+  will-change: left, top;
+  top: -40px;
+  left: -40px;
+}
+
+/* hide the ring when a tab disguise is on or a game is open (iframes have their own cursor) */
+body.cloak-active #custom-cursor,
+body.game-open #custom-cursor { display: none !important; }
+body.cloak-active, body.cloak-active a, body.cloak-active button { cursor: auto !important; }
+body.cloak-active * { cursor: auto !important; }
+body.game-open .modal-backdrop, body.game-open .modal-backdrop * { cursor: auto !important; }
+
+/* vault procedural grid + drifting glow line, behind everything */
+.vault-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(147, 51, 234, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(147, 51, 234, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.vault-glow-line {
+  position: absolute;
+  width: 200%;
+  height: 150px;
+  top: 50%;
+  left: -50%;
+  background: linear-gradient(90deg, transparent, rgba(147,51,234,0.15), rgba(192,132,252,0.3), transparent);
+  filter: blur(35px);
+  animation: vault-flow 15s infinite linear;
+  will-change: transform;
+}
+@keyframes vault-flow {
+  0% { transform: translateY(-50%) translateX(-20%) rotate(-15deg); }
+  100% { transform: translateY(-50%) translateX(70%) rotate(-15deg); }
+}
+
+/* shine sweep on the BRO ARCADE logo, like the vault's title */
+.logo {
+  background-size: 200% auto !important;
+  animation: vault-shine 4s linear infinite;
+}
+@keyframes vault-shine {
+  to { background-position: 200% center; }
+}
+
+/* tab views fade/slide in like the vault's pages */
+.tool-section:not([hidden]),
+.games-section:not([hidden]) {
+  animation: vault-view-in 0.3s ease;
+}
+@keyframes vault-view-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (pointer: coarse) {
+  #custom-cursor { display: none; }
+}
+
+/* ── Fetcher ── */
+.fetcher-controls { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+.seg { display: flex; border: 1px solid var(--card-border); border-radius: 10px; overflow: hidden; }
+.seg button { background: transparent; border: 0; color: var(--muted); padding: 9px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.seg button.on { background: linear-gradient(135deg, #ec4899, #8b5cf6); color: #fff; }
+.fetcher-controls select {
+  flex: 0 1 auto; padding: 12px 14px; border-radius: 10px;
+  border: 1px solid var(--card-border); background: rgba(255,255,255,0.05);
+  color: var(--text); font-size: 14px; font-family: inherit; cursor: pointer;
+}
+.fetcher-controls select:focus { border-color: var(--purple); outline: none; }
+.fetcher-controls select option { background: #14101f; }
+.fetcher-status { margin-bottom: 12px; color: var(--muted); font-size: 14px; min-height: 22px; }
+.fetcher-status b { color: var(--text); }
+.fetcher-status .dim { opacity: 0.8; }
+.linklike { background: none; border: 0; color: var(--purple); cursor: pointer; text-decoration: underline; font-size: inherit; font-family: inherit; padding: 0; }
+.fetcher-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.chip {
+  background: rgba(255,255,255,0.06); border: 1px solid var(--card-border);
+  color: var(--text); border-radius: 999px; padding: 8px 14px;
+  font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+.chip:hover { border-color: var(--purple); box-shadow: 0 0 12px rgba(192,132,252,0.25); transform: translateY(-1px); }
+.fetcher-dl { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
+.fetcher-dl a { color: var(--purple); font-weight: 600; }
 
 @media (max-width: 560px) {
   .ai-msg { max-width: 92%; }

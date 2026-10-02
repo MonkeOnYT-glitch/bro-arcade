@@ -16,6 +16,7 @@
     google: { label: 'Google',       title: 'Google', icon: 'https://www.google.com/favicon.ico' },
     drive:  { label: 'Google Drive',  title: 'My Drive - Google Drive', icon: 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png' },
     gmail:  { label: 'Gmail',        title: 'Inbox - Gmail', icon: 'https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico' },
+    classroom: { label: 'Classroom', title: 'Google Classroom', icon: 'https://ssl.gstatic.com/images/branding/product/1x/classroom_2020q4_32dp.png' },
     clever: { label: 'Clever',       title: 'Clever | Portal', icon: 'https://assets.clever.com/resource-icons/apps/5000234a3621dfbb160000b0/icon_86f5c6c.png' }
   };
 
@@ -44,6 +45,8 @@
     document.title = m.title;
     setFavicon(m.icon);
     paintModeButtons();
+    // Custom cursor + cursor:none stay off while disguised (vault behavior).
+    document.body.classList.toggle('cloak-active', mode !== 'none');
     var stage = $('cloak-google-wrap');
     if (stage) stage.style.display = mode === 'google' ? '' : 'none';
     toast(mode === 'none' ? 'Cloak off — tab is Bro Arcade again.' : 'Disguised as ' + m.label + '.');
@@ -133,6 +136,7 @@
     document.title = m.title;
     setFavicon(m.icon);
     paintModeButtons();
+    document.body.classList.toggle('cloak-active', currentMode !== 'none');
     var stage = $('cloak-google-wrap');
     if (stage) stage.style.display = currentMode === 'google' ? '' : 'none';
     var k = $('panic-key-input'), u = $('panic-url-input');
