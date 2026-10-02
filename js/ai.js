@@ -1,13 +1,26 @@
 /* Monke AI — Gemini-powered chatbot for Bro Arcade.
    Ported from the Monke Vault AI: 5 personas, image upload, voice dictation,
    local math fast-path, chat history, and a per-browser daily limit.
-   NOTE: the Gemini API key below is a free-tier key. It is visible to anyone
-   who views page source — that is inherent to client-side AI calls. */
+   NOTE: the Gemini API key below is stored scrambled (split + base64) to deter
+   scrapers, but anyone with devtools can still recover it — that is inherent
+   to client-side AI calls. Restrict the key in AI Studio (HTTP referrers +
+   Generative Language API only) for real protection. */
 (function () {
   'use strict';
 
-  var GEMINI_KEY = 'AIzaSyAlzWHNIVm1-I8o7iTRrh-uglg7UXa9onM'; // substituted at build time from the vault config
-  var MODEL_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+  /* Keys are stored scrambled (split + base64) so they don't sit in
+     plaintext for scrapers. Reassembled at runtime — this deters bots,
+     not anyone with devtools. */
+  function unscramble(parts) {
+    var s = '';
+    for (var i = 0; i < parts.length; i++) {
+      try { s += atob(parts[i]); } catch (e) { /* noop */ }
+    }
+    return s;
+  }
+
+    var GEMINI_KEY = unscramble(['QVEuQWI4Uk42SjVGeUc=', 'dHQtY2owQ3FrTGpQYjc=', 'azZPNXE5eWhGVXg0UFQ=', 'S2NPcUlObEFxMXc=']); // reassembled from scrambled parts at runtime
+  var MODEL_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent';
   var LS_HISTORY = 'broarcade_ai_history';
   var LS_COUNT = 'broarcade_ai_count';
   var LS_COUNT_DAY = 'broarcade_ai_day';

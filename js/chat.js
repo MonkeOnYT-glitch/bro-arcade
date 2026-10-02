@@ -5,6 +5,17 @@
 (function () {
   'use strict';
 
+  /* Keys are stored scrambled (split + base64) so they don't sit in
+     plaintext for scrapers. Reassembled at runtime — this deters bots,
+     not anyone with devtools. */
+  function unscramble(parts) {
+    var s = '';
+    for (var i = 0; i < parts.length; i++) {
+      try { s += atob(parts[i]); } catch (e) { /* noop */ }
+    }
+    return s;
+  }
+
   var COLLECTION = 'artifacts/monke-vault-db/public/data/chat_arcade-lobby';
   var MAX_LEN = 500;
   var SEND_GAP = 1500;
@@ -124,7 +135,7 @@
     try {
       if (!firebase.apps.length) {
         firebase.initializeApp({
-          apiKey: 'AIzaSyBIE85V4pzQp-bZKQ2dNxJkggEZ4qLXRyc',
+          apiKey: unscramble(['QUl6YVN5QklFOA==', 'NVY0cHpRcC1iWg==', 'S1EyZE54SmtnZw==', 'RVo0cUxYUnlj']),
           authDomain: 'newmonkevault.firebaseapp.com',
           projectId: 'newmonkevault',
           storageBucket: 'newmonkevault.firebasestorage.app',
